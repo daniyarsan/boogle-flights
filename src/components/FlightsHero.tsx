@@ -14,7 +14,10 @@ export default function FlightsHero() {
     <Box
       role="presentation"
       sx={{
-        height: 300,
+        height: {
+          xs: 200,
+          sm: 300,
+        },
         backgroundImage: `url(${
           theme.palette.mode === "dark" ? darkUrl : lightUrl
         })`,

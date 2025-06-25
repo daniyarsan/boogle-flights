@@ -1,4 +1,4 @@
-type NavBarItem = {
+export type NavBarItem = {
   title: string;
   href: string;
   icon: React.ReactNode;
@@ -10,6 +10,7 @@ export type ApiResponseSuccess<T> = {
   message: string;
   data: T;
   meta?: PaginationMeta;
+  itineraries?: [];
 };
 
 export type CaptchaMessage = {

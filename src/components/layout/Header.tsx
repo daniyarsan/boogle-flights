@@ -44,6 +44,7 @@ const navItems: NavBarItem[] = [
 
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
+import { NavBarItem } from "@/types";
 export default function Header() {
   const [open, setOpen] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -52,7 +53,6 @@ export default function Header() {
     setOpen(newOpen);
   };
 
-  // 🧠 Detect click outside
   useEffect(() => {
     if (!open) return;
 

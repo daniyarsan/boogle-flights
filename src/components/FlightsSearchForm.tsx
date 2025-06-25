@@ -9,8 +9,6 @@ import {
   Box,
   Chip,
   CircularProgress,
-  Modal,
-  Button,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import Selector from "@/components/form/Selector";
@@ -27,18 +25,13 @@ import {
 } from "@/types/schema";
 import dayjs from "dayjs";
 import { cabinOptions } from "@/config";
+import { FlightItem } from "@/types";
 type AirportOption = {
   id: string;
   tag: string;
 };
 
 export default function FlightsSearchForm() {
-  const [captchaData, setCaptchaData] = useState<null | {
-    pageBase64: string;
-    uuid: string;
-    vid: string;
-  }>(null);
-
   const { showToast } = useToast();
 
   const [form, setForm] = useState<FlightSearchInput>({
@@ -57,60 +50,26 @@ export default function FlightsSearchForm() {
     queryKey: ["searchFlights", lastInput.current],
     queryFn: async () => {
       const res = await searchFlights(lastInput.current);
-      console.log(res);
 
-      if (!res.status) {
-        if (res.message?.action === "captcha") {
-          // Сохраняем данные капчи в состоянии, чтобы отобразить
-          setCaptchaData({
-            pageBase64: res.message.page,
-            uuid: res.message.uuid,
-            vid: res.message.vid,
-          });
-          throw new Error("Captcha required");
-        }
-        throw new Error(
-          typeof res.message === "string"
-            ? res.message
-            : JSON.stringify(res.message),
-        );
-      }
-
-      return res.data;
+      if (!res.status) throw new Error(res.message);
+      return res;
     },
     enabled: false,
     // onError: (e) => showToast(`Error: ${String(e)}`, "error"),
     // onSuccess: () => showToast("Flights loaded!", "success"),
   });
 
-  // Функция для закрытия капчи, например, после успешного решения
-  const handleCaptchaClose = () => {
-    setCaptchaData(null);
-    // Можно автоматически перезапустить запрос
-    refetch();
-  };
-
   const handleSubmit = () => {
-    const [start, end] = form.date || [];
-    const formattedStart = start ? dayjs(start.$d).format("YYYY-MM-DD") : "";
-    const formattedEnd = end ? dayjs(end.$d).format("YYYY-MM-DD") : "";
-
-    const dataToValidate = {
-      ...form,
-      date: formattedStart,
-      returnDate: formattedEnd,
-    };
-
-    const parsed = flightSearchSchema.safeParse(dataToValidate);
+    const parsed = flightSearchSchema.safeParse(form);
     if (!parsed.success) {
       parsed.error.errors.forEach((err) => showToast(err.message, "error"));
       return;
     }
-
     lastInput.current = parsed.data;
     refetch();
   };
 
+  console.log(form);
   return (
     <Stack direction={"column"} spacing={4}>
       <Box sx={{ position: "relative" }}>
@@ -128,20 +87,20 @@ export default function FlightsSearchForm() {
               </Stack>
 
               <Grid container spacing={1}>
-                <Grid size={{ xs: 3.5 }}>
+                <Grid size={{ md: 3.5, xs: 6 }}>
                   <AirportSearchField
                     value={form.originSkyId}
                     onChange={(val: AirportOption) => {
                       setForm((f) => ({
                         ...f,
-                        originSkyId: val?.tag ?? "",
-                        originEntityId: val?.id ?? "",
+                        originSkyId: val.tag ?? "",
+                        originEntityId: val.id ?? "",
                       }));
                     }}
                   />
                 </Grid>
 
-                <Grid size={{ xs: 3.5 }}>
+                <Grid size={{ md: 3.5, xs: 6 }}>
                   <AirportSearchField
                     value={form.destinationSkyId}
                     onChange={(val: AirportOption) => {
@@ -154,11 +113,15 @@ export default function FlightsSearchForm() {
                   />
                 </Grid>
 
-                <Grid size={{ xs: 5 }}>
+                <Grid size={{ xs: 12, md: 5 }}>
                   <DateRangeField
-                    value={form.date}
-                    onChange={(val) => {
-                      setForm((f) => ({ ...f, date: val }));
+                    value={{ start: form.date, end: form.returnDate }}
+                    handleChange={(start, end) => {
+                      setForm((f) => ({
+                        ...f,
+                        date: start,
+                        returnDate: end,
+                      }));
                     }}
                   />
                 </Grid>
@@ -193,43 +156,9 @@ export default function FlightsSearchForm() {
         </Box>
       </Box>
 
-      {data !== undefined && <FlightsList data={data.itineraries} />}
-
-      <Modal open={!!captchaData} onClose={handleCaptchaClose}>
-        <Box
-          sx={{
-            position: "absolute" as const,
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "90vw",
-            maxWidth: 600,
-            height: "80vh",
-            bgcolor: "background.paper",
-            boxShadow: 24,
-            p: 2,
-            overflow: "auto",
-          }}
-        >
-          {captchaData && (
-            <>
-              {/* iframe с капчей */}
-              <iframe
-                srcDoc={atob(captchaData.pageBase64)}
-                title="Captcha Challenge"
-                style={{ width: "100%", height: "100%", border: "none" }}
-              />
-              <Button
-                variant="contained"
-                sx={{ mt: 2 }}
-                onClick={handleCaptchaClose}
-              >
-                Закрыть капчу и попробовать снова
-              </Button>
-            </>
-          )}
-        </Box>
-      </Modal>
+      {data !== undefined && (
+        <FlightsList data={data.itineraries as FlightItem[]} />
+      )}
     </Stack>
   );
 }

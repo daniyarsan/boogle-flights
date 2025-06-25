@@ -1,6 +1,6 @@
 import { apiClient } from "@/lib/requester";
 import { CONFIG } from "@/config";
-import { Airport, SearchFlightsQuery } from "@/types";
+import { Airport, FlightItem, SearchFlightsQuery } from "@/types";
 import { toStringParams } from "@/utils";
 
 export async function getAirportsByTitle(inputQuery: { query: string }) {
@@ -12,7 +12,7 @@ export async function getAirportsByTitle(inputQuery: { query: string }) {
 
 export async function searchFlights(inputQuery: SearchFlightsQuery) {
   const query = new URLSearchParams(toStringParams(inputQuery));
-  return await apiClient.get<Airport[]>(
+  return await apiClient.get<FlightItem[]>(
     `${CONFIG.API_URL}/flights/searchFlights?${query.toString()}`,
   );
 }
