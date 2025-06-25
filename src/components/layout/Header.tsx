@@ -133,7 +133,16 @@ export default function Header() {
             </Box>
           </Link>
 
-          <Stack direction="row" spacing={2}>
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{
+              display: {
+                xs: "none",
+                sm: "flex",
+              },
+            }}
+          >
             {navItems.map((item, index) => (
               <Chip
                 key={index}
