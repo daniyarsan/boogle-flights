@@ -16,6 +16,7 @@ interface ExpandMoreProps extends IconButtonProps {
 
 const ExpandMore = styled((props: ExpandMoreProps) => {
   const { expand, ...other } = props;
+  console.log(expand);
   return <IconButton {...other} />;
 })(({ theme }) => ({
   marginLeft: "auto",
@@ -44,6 +45,7 @@ export default function FlightCard({ item }: { item: FlightItem }) {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
+  console.log(item);
 
   return (
     <Card

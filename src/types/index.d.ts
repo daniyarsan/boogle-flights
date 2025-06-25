@@ -13,15 +13,6 @@ export type ApiResponseSuccess<T> = {
   itineraries?: [];
 };
 
-export type CaptchaMessage = {
-  action: "captcha";
-  uuid: string;
-  vid: string;
-  appId: string;
-  page: string;
-  collectorUrl: string;
-};
-
 export type ApiResponseError = {
   status: false;
   message: string;
@@ -111,8 +102,6 @@ interface MarketingCarrier {
   allianceId: number;
   displayCode: string;
 }
-
-interface OperatingCarrier extends MarketingCarrier {}
 
 interface Segment {
   id: string;
