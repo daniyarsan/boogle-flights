@@ -13,7 +13,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 
 type AirportSearchFieldProps = {
   value: string;
-  onChange: (val: { tag: string; id: string }) => void;
+  onChange: (val: { tag?: string; id?: string }) => void;
 };
 
 export default function AirportSearchField({
