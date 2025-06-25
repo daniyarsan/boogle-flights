@@ -4,11 +4,18 @@ import { LocalizationProvider } from "@mui/x-date-pickers-pro/LocalizationProvid
 import { AdapterDayjs } from "@mui/x-date-pickers-pro/AdapterDayjs";
 import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
 
-export default function BasicDateRangePicker() {
+interface DateRangeFieldProps {
+  value: string;
+  onChange: (date: string) => void;
+}
+export default function DateRangeField({
+  value,
+  onChange,
+}: DateRangeFieldProps) {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DemoContainer components={["DateRangePicker"]}>
-        <DateRangePicker />
+      <DemoContainer sx={{ p: 0 }} components={["DateRangePicker"]}>
+        <DateRangePicker value={value} onChange={(val) => onChange(val)} />
       </DemoContainer>
     </LocalizationProvider>
   );
